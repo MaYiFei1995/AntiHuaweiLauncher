@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">我爱华为</string>
+    <string name="main_title">华为桌面去他妈</string>
+    <string name="pkg_name_hint">第三方启动器的包名</string>
+    <string name="save_restart">保存并启动服务</string>
+</resources>
