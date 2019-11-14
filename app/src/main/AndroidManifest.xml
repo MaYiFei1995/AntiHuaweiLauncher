@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:name="com.mai.fxxkhuaweilauncher.App"
+        android:name=".App"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,7 +22,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name="com.mai.fxxkhuaweilauncher.FxxkHuaweiLauncherService" />
+        <service android:name="com.mai.fxxkhuaweilauncher.FxxkHuaweiLauncherService"
+            android:process=":fkHwLauncher"/>
+        <receiver android:name=".CloseSystemDialogsReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.CLOSE_SYSTEM_DIALOGS" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

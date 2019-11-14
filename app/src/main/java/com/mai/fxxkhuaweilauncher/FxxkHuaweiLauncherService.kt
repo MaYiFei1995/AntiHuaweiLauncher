@@ -1,57 +1,18 @@
 package com.mai.fxxkhuaweilauncher
 
-import android.app.PendingIntent
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.*
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import org.jetbrains.anko.toast
+import java.lang.Exception
 
 class FxxkHuaweiLauncherService : Service() {
 
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == Intent.ACTION_CLOSE_SYSTEM_DIALOGS) {
-                val stringExtra: String = intent.getStringExtra("reason") ?: return
-                if (stringExtra == "homekey") {
-                    Log.i("FxxkService", "home button pressed")
-
-                    val intent = Intent(Intent.ACTION_MAIN)
-                    intent.addCategory(Intent.CATEGORY_LAUNCHER)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    intent.component = ComponentName(
-                        "amirz.rootless.nexuslauncher",
-                        "com.google.android.apps.nexuslauncher.NexusLauncherActivity"
-                    )
-//                        startActivity(intent)
-
-                    val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
-                    try {
-                        pendingIntent.send()
-                    } catch (e: PendingIntent.CanceledException) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-        }
-
-    }
-
-    override fun onCreate() {
-        Log.i("FxxkService", "onCreate")
-        super.onCreate()
-        val notification = NotificationCompat.Builder(application, App.notificationChannelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setTicker("监听服务启动")
-            .setContentTitle("监听服务运行中")
-            .setContentText("正在监听Home键变化")
-            .build()
-
-        startForeground(1, notification)
-
-        registerReceiver(receiver, IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
-    }
+    private val receiver = CloseSystemDialogsReceiver()
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -59,6 +20,22 @@ class FxxkHuaweiLauncherService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i("FxxkService", "onStartCommand")
+        initNotificationChannel()
+        val notification = NotificationCompat.Builder(this, "0")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setTicker("监听服务启动")
+            .setContentTitle("监听服务运行中")
+            .setContentText("正在监听Home键变化")
+            .build()
+
+        startForeground(1, notification)
+        try {
+            unregisterReceiver(receiver)
+        } catch (ignore: Exception) {
+
+        }
+        registerReceiver(receiver, IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+        toast("onStartCommand")
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -67,6 +44,18 @@ class FxxkHuaweiLauncherService : Service() {
         unregisterReceiver(receiver)
         stopForeground(true)
         super.onDestroy()
+    }
+
+    private fun initNotificationChannel() {
+        // 初始化NotificationChannel
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channel = NotificationChannel(
+            "0",
+            "前台通知",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        notificationManager.createNotificationChannel(channel)
     }
 
 }

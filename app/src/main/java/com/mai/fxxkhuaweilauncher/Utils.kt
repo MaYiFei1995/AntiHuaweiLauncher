@@ -27,6 +27,3 @@ fun Context.startAntiService(): Boolean {
     return false
 }
 
-fun Context.stopAntiService() {
-    stopService(Intent(this, FxxkHuaweiLauncherService::class.java))
-}
