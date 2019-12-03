@@ -4,6 +4,10 @@
 
 ---
 更新：
+* 191203
+  * 已知问题
+    * 不支持Android10
+    * Emui 9.1.0.336版本使用PendingIntent来startActivity时仍有5s的延迟
 * 191114
   * 提高服务稳定性
 * 初始版本：
